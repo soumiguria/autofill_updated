@@ -1,0 +1,274 @@
+import 'package:flutter/material.dart';
+import 'package:frontend/screens/dashboard_screen.dart';
+import 'package:frontend/screens/signup_screen.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+class LoginScreen extends StatelessWidget {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+// Future<void> login(BuildContext context) async {
+//   final url = 'http://192.168.29.73:5000/api/users/login'; // Replace with your backend URL
+//   final response = await http.post(
+//     Uri.parse(url),
+//     body: json.encode({
+//       'email': emailController.text,
+//       'password': passwordController.text,
+//     }),
+//     headers: {'Content-Type': 'application/json'},
+//   );
+
+//   if (response.statusCode == 200) {
+//     // Login successful, navigate to dashboard screen
+//     Navigator.pushReplacement(
+//       context,
+//       MaterialPageRoute(builder: (context) => DashboardScreen()),
+//     );
+//   } else if (response.statusCode == 401) {
+//     // Unauthorized: Invalid credentials
+//     final responseData = json.decode(response.body);
+//     final errorMessage = responseData['message'];
+//     showDialog(
+//       context: context,
+//       builder: (context) => AlertDialog(
+//         title: Text('Login Failed'),
+//         content: Text(errorMessage),
+//         actions: [
+//           TextButton(
+//             onPressed: () => Navigator.pop(context),
+//             child: Text('OK'),
+//           ),
+//         ],
+//       ),
+//     );
+//   } else {
+//     // Other error occurred
+//     showDialog(
+//       context: context,
+//       builder: (context) => AlertDialog(
+//         title: Text('Login Failed'),
+//         content: Text('An unexpected error occurred. Please try again later.'),
+//         actions: [
+//           TextButton(
+//             onPressed: () => Navigator.pop(context),
+//             child: Text('OK'),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+// Future<void> login(BuildContext context) async {
+//   final url = 'http://192.168.29.73:5000/api/users/login'; // Replace with your backend URL
+//   final response = await http.post(
+//     Uri.parse(url),
+//     body: json.encode({
+//       'email': emailController.text,
+//       'password': passwordController.text,
+//     }),
+//     headers: {'Content-Type': 'application/json'},
+//   );
+
+//   if (response.statusCode == 200) {
+//     // Login successful, extract the token from the response
+//     final responseData = json.decode(response.body);
+//     final token = responseData['token'];
+
+//     // Navigate to dashboard screen and pass the token
+//     Navigator.pushReplacement(
+//       context,
+//       MaterialPageRoute(builder: (context) => DashboardScreen(token: token)),
+//     );
+//   } else if (response.statusCode == 401) {
+//     // Unauthorized: Invalid credentials
+//     final responseData = json.decode(response.body);
+//     final errorMessage = responseData['message'];
+//     showDialog(
+//       context: context,
+//       builder: (context) => AlertDialog(
+//         title: Text('Login Failed'),
+//         content: Text(errorMessage),
+//         actions: [
+//           TextButton(
+//             onPressed: () => Navigator.pop(context),
+//             child: Text('OK'),
+//           ),
+//         ],
+//       ),
+//     );
+//   } else {
+//     // Other error occurred
+//     showDialog(
+//       context: context,
+//       builder: (context) => AlertDialog(
+//         title: Text('Login Failed'),
+//         content: Text('An unexpected error occurred. Please try again later.'),
+//         actions: [
+//           TextButton(
+//             onPressed: () => Navigator.pop(context),
+//             child: Text('OK'),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+Future<void> login(BuildContext context) async {
+  final url = 'http://192.168.137.23:5000/api/users/login';
+  final response = await http.post(
+    Uri.parse(url),
+    body: json.encode({
+      'email': emailController.text,
+      'password': passwordController.text,
+    }),
+    headers: {'Content-Type': 'application/json'},
+  );
+
+  if (response.statusCode == 200) {
+    final responseData = json.decode(response.body);
+    final userId = responseData['userId']; // Extract user ID
+    final token = responseData['token'];
+
+    // Navigate to dashboard screen and pass user ID and token
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => DashboardScreen(userId: userId, token: token)),
+    );
+  } else if (response.statusCode == 401) {
+    final responseData = json.decode(response.body);
+    final errorMessage = responseData['message'];
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Login Failed'),
+        content: Text(errorMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
+  } else {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Login Failed'),
+        content: Text('An unexpected error occurred. Please try again later.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Login'),
+      ),
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset(
+            'assets/images/autofill_splash_updated.png',
+            fit: BoxFit.cover,
+          ),
+          Container(
+            color: Colors.white.withOpacity(0.7),
+          ),
+          Center(
+            child: Card(
+              margin: EdgeInsets.symmetric(horizontal: 20),
+              color: Colors.white,
+              elevation: 8,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Login',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    TextFormField(
+                      controller: emailController,
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        prefixIcon: Icon(Icons.email),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    TextFormField(
+                      controller: passwordController,
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        prefixIcon: Icon(Icons.lock),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      obscureText: true,
+                    ),
+                    SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity, 
+                      height: 60, 
+                      child: ElevatedButton(
+                        onPressed: () => login(context),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.greenAccent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: EdgeInsets.all(16), 
+                        ),
+                        child: Text(
+                          'Login',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => SignUpScreen()),
+                        );
+                      },
+                      child: Text(
+                        "Don't have an account? Sign Up",
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
